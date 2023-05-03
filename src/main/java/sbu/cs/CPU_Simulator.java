@@ -2,6 +2,7 @@ package sbu.cs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -23,7 +24,24 @@ public class CPU_Simulator
         long processingTime;
         String ID;
         public Task(String ID, long processingTime) {
-        // TODO
+            this.ID = ID;
+            this.processingTime = processingTime;
+        }
+
+        public long getProcessingTime() {
+            return processingTime;
+        }
+
+        public void setProcessingTime(long processingTime) {
+            this.processingTime = processingTime;
+        }
+
+        public String getID() {
+            return ID;
+        }
+
+        public void setID(String ID) {
+            this.ID = ID;
         }
 
     /*
@@ -32,7 +50,11 @@ public class CPU_Simulator
     */
         @Override
         public void run() {
-        // TODO
+        try {
+            Thread.sleep(getProcessingTime());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         }
     }
 
@@ -44,7 +66,22 @@ public class CPU_Simulator
     public ArrayList<String> startSimulation(ArrayList<Task> tasks) {
         ArrayList<String> executedTasks = new ArrayList<>();
 
-        // TODO
+        for (int i = 0; i < tasks.size(); i++){
+            for (int j = i+1; j < tasks.size(); j++){
+                if (tasks.get(i).getProcessingTime() > tasks.get(j).getProcessingTime()){
+                    Collections.swap(tasks, i, j);
+                }
+            }
+        }
+        for (Task task : tasks){
+            Thread thread = new Thread(task);
+            thread.start();
+            try{
+                executedTasks.add(task.ID);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         return executedTasks;
     }
