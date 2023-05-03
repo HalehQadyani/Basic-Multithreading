@@ -19,6 +19,10 @@ package sbu.cs;
     Use the tests provided in the test folder to ensure your code works correctly.
  */
 
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class FindMultiples
 {
 
@@ -29,14 +33,60 @@ public class FindMultiples
     The getSum function should be called at the start of your program.
     New Threads and tasks should be created here.
     */
-    public int getSum(int n) {
-        int sum = 0;
+    static class DivisorTask implements Runnable {
+        private int n;
+        private int divisor;
+        private int sum = 0;
+        public DivisorTask(int n, int divisor) {
+            this.n = n;
+            this.divisor = divisor;
+        }
+        public void run() {
+            for (int i = 1; i <= n; i++) {
+                if (i % divisor == 0) {
+                    sum += i;
+                }
+            }
+        }
+        public int Sum() {
+            return sum;
+        }
+    }
 
-        // TODO
-
-        return sum;
+    public static int getSum(int n) {
+        int nThreads = 3;
+        // number of threads to be created
+        ExecutorService executor = Executors.newFixedThreadPool(nThreads);
+        // create three tasks for each divisor
+        DivisorTask task1 = new DivisorTask(n, 3);
+        DivisorTask task2 = new DivisorTask(n, 5);
+        DivisorTask task3 = new DivisorTask(n, 7);
+        DivisorTask task4 = new DivisorTask(n, 21);
+        DivisorTask task5 = new DivisorTask(n, 15);
+        DivisorTask task6 = new DivisorTask(n, 35);
+        DivisorTask task7 = new DivisorTask(n, 105);
+        // submit the tasks to the executor
+        executor.submit(task1);
+        executor.submit(task2);
+        executor.submit(task3);
+        executor.submit(task4);
+        executor.submit(task5);
+        executor.submit(task6);
+        executor.submit(task7);
+        // shutdown the executor after all tasks are completed
+        executor.shutdown();
+        // wait for all tasks to complete
+        while(!executor.isTerminated()) {
+            Thread.yield();
+        }
+        int Total = task1.Sum() + task2.Sum() + task3.Sum()
+                - task4.Sum() - task5.Sum() - task6.Sum() - task7.Sum();
+        return Total;
     }
 
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        getSum(n);
     }
 }
